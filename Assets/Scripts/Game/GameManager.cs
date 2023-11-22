@@ -167,11 +167,11 @@ public class GameManager : MonoBehaviour
          */
         
 #if UNITY_EDITOR
-        // Quitting in Unity Editor: 
+    UnityEditor.EditorApplication.isPlaying = false;
 #elif UNITY_WEBPLAYER || UNITY_WEBGL
-        // Quitting in the WebGL build: 
+        Application.OpenURL(Application.absoluteURL);
 #else // !UNITY_WEBPLAYER
-        // Quitting in all other builds: 
+        Application.Quit();
 #endif
     }
 }

@@ -153,7 +153,8 @@ public class InventoryManager : MonoBehaviour
          * this is that whenever we press the button, CreateItem() will
          * be called.
          */
-        
+        mItemCreateButton = itemDetails.Q<Button>("ItemDetailButtonCreate");
+        mItemCreateButton.clicked += () => CreateItem();
         
         
         
@@ -356,9 +357,20 @@ public class InventoryManager : MonoBehaviour
         
         if (item == null)
         { // We have no item selected -> Provide some default information.
+            mItemCreateButton.SetEnabled(false);
+            mItemDetailName.text = "No Item Selected";
+            mItemDetailDescription.text = "No description.";
+            mItemDetailCost.text = "0";
         }
         else
         { // We have item selected -> Use the item information.
+            mItemDetailName.text = item.definition.readableName;
+            mItemDetailDescription.text = item.definition.readableDescription;
+            mItemDetailCost.text = Convert.ToString(item.definition.cost);
+            if(availableCurrency >= item.definition.cost)
+                mItemCreateButton.SetEnabled(true);
+            else
+                mItemCreateButton.SetEnabled(false);
         }
         
         selectedItem = item;
@@ -392,8 +404,16 @@ public class InventoryManager : MonoBehaviour
          * These items are not cheap to make!
          */
         
+        if(selectedItem == null)
+            return false;
         var itemDefinition = selectedItem?.definition;
+
+        if(itemDefinition.cost > mAvailableCurrency)
+            return false;
+
+        Instantiate(itemDefinition.prefab, createDestination.transform);
+        mAvailableCurrency -= itemDefinition.cost;
         
-        return false;
+        return true;
     }
 }
